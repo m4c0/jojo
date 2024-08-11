@@ -1,14 +1,26 @@
 export module jojo;
 import hai;
 import jute;
+import silog;
 
-export namespace jojo {
-  void on_error(hai::fn<void, void *, jute::view>);
+namespace jojo {
+  extern hai::fn<void, void *, jute::view> err_callback;
 
-  void read(jute::view name, void *, hai::fn<void, void *, hai::array<char> &>);
+  export void on_error(hai::fn<void, void *, jute::view> callback) { err_callback = callback; }
+
+  export void read(jute::view name, void *, hai::fn<void, void *, hai::array<char> &>);
 }
 
+module :private;
+
+static void null_callback(void *, jute::view msg) {
+  silog::log(silog::error, "Unexpected IO error: %s", msg.cstr().begin());
+}
+
+hai::fn<void, void *, jute::view> jojo::err_callback{&null_callback};
+
 #ifdef LECO_TARGET_WASM
+#pragma leco add_impl wasm
 #else
 #pragma leco add_impl libc
 #endif
