@@ -6,7 +6,7 @@ import jute;
 import silog;
 
 static void got_file(void * id, hai::array<char> & buf) {
-  silog::log(silog::info, "Got %d bytes", buf.size());
+  silog::log(silog::info, "Got %d bytes: %*s", buf.size(), buf.size(), buf.begin());
 }
 
 static void fail(void * id, jute::view msg) {
