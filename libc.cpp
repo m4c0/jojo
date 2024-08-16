@@ -24,15 +24,15 @@ void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::array<ch
   FILE * f = fopen(name.cstr().begin(), "rb");
   if (!f) return fail(ptr);
 
-  if (-1 == fseek(f, 0, SEEK_END)) fail(ptr);
+  if (-1 == fseek(f, 0, SEEK_END)) return fail(ptr);
 
   auto sz = ftell(f);
-  if (sz == -1) fail(ptr);
+  if (sz == -1) return fail(ptr);
 
-  if (-1 == fseek(f, 0, SEEK_SET)) fail(ptr);
+  if (-1 == fseek(f, 0, SEEK_SET)) return fail(ptr);
 
   hai::array<char> buf{static_cast<unsigned>(sz)};
-  if (1 != fread(buf.begin(), sz, 1, f)) fail(ptr);
+  if (1 != fread(buf.begin(), sz, 1, f)) return fail(ptr);
 
   fclose(f);
   
