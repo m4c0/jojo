@@ -9,6 +9,7 @@ namespace jojo {
   export void on_error(hai::fn<void, void *, jute::view> callback) { err_callback = callback; }
 
   export void read(jute::view name, void *, hai::fn<void, void *, hai::array<char> &>);
+  export void write(jute::view name, void *, hai::array<char> &, hai::fn<void, void *>);
 }
 
 module :private;

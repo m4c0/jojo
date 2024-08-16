@@ -38,3 +38,14 @@ void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::array<ch
   
   callback(ptr, buf);
 }
+
+void jojo::write(jute::view name, void * ptr, hai::array<char> & buf, hai::fn<void, void *> callback) {
+  FILE * f = fopen(name.cstr().begin(), "wb");
+  if (!f) return fail(ptr);
+
+  if (1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(ptr);
+
+  fclose(f);
+
+  callback(ptr);
+}
