@@ -24,7 +24,9 @@ int main() {
   using namespace jute::literals;
   jojo::write("out/test.txt", nullptr, "hello "_hs, [](void *) {
     jojo::append("out/test.txt", nullptr, "world!"_hs, [](void *) {
-      jojo::read("out/test.txt", nullptr, got_file);
+      // Another `read` example, using cstr instead of array
+      jojo::read("out/test.txt", nullptr,
+                 [](void *, hai::cstr & buf) { silog::log(silog::info, "Got [%s]", buf.begin()); });
     });
   });
 #endif

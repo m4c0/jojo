@@ -7,20 +7,20 @@ module jojo;
 import silog;
 
 #ifdef LECO_TARGET_WINDOWS
-static inline FILE *fopen(auto name, auto mode) {
-  FILE *res;
+static inline FILE * fopen(auto name, auto mode) {
+  FILE * res;
   return ::fopen_s(&res, name, mode) ? nullptr : res;
 }
 #define strerror_r(err, buf, len) strerror_s(buf, len, err)
 #endif
 
 static void fail(void * ptr) {
-  hai::cstr buf{1024};
+  hai::cstr buf { 1024 };
   strerror_r(errno, buf.begin(), buf.size());
-  jojo::err_callback(ptr, jute::view{buf});
+  jojo::err_callback(ptr, jute::view { buf });
 }
 
-void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::array<char> &> callback) {
+template <typename Buf> static void just_read(jute::view name, void * ptr, hai::fn<void, void *, Buf &> callback) {
   FILE * f = fopen(name.cstr().begin(), "rb");
   if (!f) return fail(ptr);
 
@@ -31,12 +31,19 @@ void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::array<ch
 
   if (-1 == fseek(f, 0, SEEK_SET)) return fail(ptr);
 
-  hai::array<char> buf{static_cast<unsigned>(sz)};
+  Buf buf { static_cast<unsigned>(sz) };
   if (1 != fread(buf.begin(), sz, 1, f)) return fail(ptr);
 
   fclose(f);
-  
+
   callback(ptr, buf);
+}
+
+void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::array<char> &> callback) {
+  just_read(name, ptr, callback);
+}
+void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::cstr &> callback) {
+  just_read(name, ptr, callback);
 }
 
 void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
