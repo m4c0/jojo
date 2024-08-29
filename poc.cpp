@@ -29,5 +29,7 @@ int main() {
                  [](void *, hai::cstr & buf) { silog::log(silog::info, "Got [%s]", buf.begin()); });
     });
   });
+
+  silog::log(silog::info, "Read [%s]", jojo::read_cstr("out/test.txt").begin());
 #endif
 }

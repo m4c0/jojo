@@ -12,6 +12,11 @@ namespace jojo {
   export void read(jute::view name, void *, hai::fn<void, void *, hai::array<char> &>);
   export void read(jute::view name, void *, hai::fn<void, void *, hai::cstr &>);
   export void write(jute::view name, void *, jute::heap data, hai::fn<void, void *>);
+
+#ifndef LECO_TARGET_WASM
+  export hai::cstr read_cstr(jute::view name);
+  export hai::array<char> read(jute::view name);
+#endif
 } // namespace jojo
 
 module :private;

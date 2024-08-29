@@ -46,6 +46,14 @@ void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::cstr &> 
   just_read(name, ptr, callback);
 }
 
+template <typename Buf> static Buf just_read(jute::view name) {
+  Buf res {};
+  just_read<Buf>(name, nullptr, [&](void *, Buf & r) { res = traits::move(r); });
+  return res;
+}
+hai::array<char> jojo::read(jute::view name) { return just_read<hai::array<char>>(name); }
+hai::cstr jojo::read_cstr(jute::view name) { return just_read<hai::cstr>(name); }
+
 void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
   FILE * f = fopen(name.cstr().begin(), "wb");
   if (!f) return fail(ptr);
