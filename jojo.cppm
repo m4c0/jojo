@@ -17,8 +17,8 @@ namespace jojo {
   export hai::cstr read_cstr(jute::view name);
   export hai::array<char> read(jute::view name);
 
-  export void append(jute::view name, jute::view data);
-  export void write(jute::view name, jute::view data);
+  export void append(jute::view name, jute::heap data);
+  export void write(jute::view name, jute::heap data);
 #endif
 } // namespace jojo
 

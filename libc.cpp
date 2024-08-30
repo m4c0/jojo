@@ -76,9 +76,9 @@ void jojo::append(jute::view name, void * ptr, jute::heap buf, hai::fn<void, voi
   callback(ptr);
 }
 
-void jojo::write(jute::view name, jute::view data) {
+void jojo::write(jute::view name, jute::heap data) {
   jojo::write(name, nullptr, data, [=](void *) {});
 }
-void jojo::append(jute::view name, jute::view data) {
+void jojo::append(jute::view name, jute::heap data) {
   jojo::append(name, nullptr, data, [=](void *) {});
 }
