@@ -32,6 +32,7 @@ template <typename Buf> static void just_read(jute::view name, void * ptr, hai::
 
   auto sz = ftell(f);
   if (sz == -1) return fail(ptr);
+  if (sz == 0) return callback(ptr, Buf {});
 
   if (-1 == fseek(f, 0, SEEK_SET)) return fail(ptr);
 
