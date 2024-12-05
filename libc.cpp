@@ -4,6 +4,7 @@ module;
 #include <string.h>
 
 module jojo;
+import hai;
 import silog;
 
 #ifdef LECO_TARGET_WINDOWS
@@ -20,8 +21,11 @@ static void fail(void * ptr) {
   jojo::err_callback(ptr, jute::view { buf });
 }
 
+struct closer { void operator()(FILE * f) { fclose(f); } };
+
 template <typename Buf> static void just_read(jute::view name, void * ptr, hai::fn<void, void *, Buf &> callback) {
   FILE * f = fopen(name.cstr().begin(), "rb");
+  hai::holder<FILE, closer> fptr { f };
   if (!f) return fail(ptr);
 
   if (-1 == fseek(f, 0, SEEK_END)) return fail(ptr);
@@ -33,8 +37,6 @@ template <typename Buf> static void just_read(jute::view name, void * ptr, hai::
 
   Buf buf { static_cast<unsigned>(sz) };
   if (1 != fread(buf.begin(), sz, 1, f)) return fail(ptr);
-
-  fclose(f);
 
   callback(ptr, buf);
 }
@@ -56,22 +58,20 @@ hai::cstr jojo::read_cstr(jute::view name) { return just_read<hai::cstr>(name); 
 
 void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
   FILE * f = fopen(name.cstr().begin(), "wb");
+  hai::holder<FILE, closer> fptr { f };
   if (!f) return fail(ptr);
 
   if (1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(ptr);
-
-  fclose(f);
 
   callback(ptr);
 }
 
 void jojo::append(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
   FILE * f = fopen(name.cstr().begin(), "ab");
+  hai::holder<FILE, closer> fptr { f };
   if (!f) return fail(ptr);
 
   if (1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(ptr);
-
-  fclose(f);
 
   callback(ptr);
 }
