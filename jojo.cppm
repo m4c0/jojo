@@ -19,6 +19,8 @@ namespace jojo {
 
   export void append(jute::view name, jute::heap data);
   export void write(jute::view name, jute::heap data);
+
+  export void readlines(jute::view name, hai::fn<void, jute::view> fn);
 #endif
 } // namespace jojo
 
