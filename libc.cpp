@@ -86,6 +86,7 @@ void jojo::append(jute::view name, jute::heap data) {
 
 void jojo::readlines(jute::view name, hai::fn<void, jute::view> fn) {
   FILE * f = fopen(name.cstr().begin(), "rb");
+  hai::holder<FILE, closer> fptr { f };
   if (!f) return fail(nullptr);
 
   char buf[1024];
@@ -95,6 +96,4 @@ void jojo::readlines(jute::view name, hai::fn<void, jute::view> fn) {
     if (v[v.size() - 1] == '\r') v = v.subview(v.size() - 1).before;
     fn(v);
   }
-
-  fclose(f);
 }
