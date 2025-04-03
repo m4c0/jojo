@@ -62,7 +62,7 @@ void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void
   hai::holder<FILE, closer> fptr { f };
   if (!f) return fail(ptr);
 
-  if (1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(ptr);
+  if (buf.size() > 0 && 1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(ptr);
 
   callback(ptr);
 }
