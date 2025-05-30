@@ -5,7 +5,6 @@ module;
 
 module jojo;
 import hai;
-import silog;
 
 #ifdef LECO_TARGET_WINDOWS
 static inline FILE * fopen(auto name, auto mode) {

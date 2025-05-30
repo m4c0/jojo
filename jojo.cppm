@@ -1,7 +1,6 @@
 export module jojo;
 import hai;
 import jute;
-import silog;
 
 namespace jojo {
   extern hai::fn<void, void *, jute::view> err_callback;
@@ -22,13 +21,13 @@ namespace jojo {
 
   export void readlines(jute::view name, hai::fn<void, jute::view> fn);
 #endif
+
+  export struct error {};
 } // namespace jojo
 
 module :private;
 
-static void null_callback(void *, jute::view msg) {
-  silog::log(silog::error, "Unexpected IO error: %s", msg.cstr().begin());
-}
+static void null_callback(void *, jute::view msg) { throw jojo::error {}; }
 
 hai::fn<void, void *, jute::view> jojo::err_callback { &null_callback };
 
