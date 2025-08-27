@@ -23,6 +23,11 @@ EXP("jojo_callback") void callback(void * ptr, unsigned idx) {
   fn = {};
   buf = {};
 }
+EXP("jojo_err_callback") void err_callback(void * ptr, unsigned idx) {
+  jojo::err_callback(ptr, "Request failed");
+  g_in_flights[idx] = {};
+  g_buffers[idx] = {};
+}
 
 void jojo::read(jute::view name, void * ptr, fn_t fn) {
   for (auto i = 0; i < g_in_flights.size(); i++) {
