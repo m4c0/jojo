@@ -23,11 +23,11 @@ namespace jojo {
 #endif
 
   export struct error {};
+
+  void null_callback(void *, jute::view msg);
 } // namespace jojo
 
 module :private;
-
-static void null_callback(void *, jute::view msg) { throw jojo::error {}; }
 
 hai::fn<void, void *, jute::view> jojo::err_callback { &null_callback };
 

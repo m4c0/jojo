@@ -96,3 +96,7 @@ void jojo::readlines(jute::view name, hai::fn<void, jute::view> fn) {
     fn(v);
   }
 }
+
+void jojo::null_callback(void *, jute::view msg) {
+  throw jojo::error {};
+}

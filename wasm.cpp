@@ -36,3 +36,8 @@ void jojo::read(jute::view name, void * ptr, fn_t fn) {
 
   err_callback(ptr, "Too many open files");
 }
+
+void jojo::null_callback(void *, jute::view msg) {
+  vaselin::console_error(msg.begin(), msg.size());
+  vaselin::raise_error();
+}
