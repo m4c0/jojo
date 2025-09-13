@@ -14,10 +14,13 @@ static inline FILE * fopen(auto name, auto mode) {
 #define strerror_r(err, buf, len) strerror_s(buf, len, err)
 #endif
 
-static void fail(void * ptr) {
-  hai::cstr buf { 1024 };
+static void fail(jute::view filename, void * ptr) {
+  hai::array<char> buf { 10240 };
   strerror_r(errno, buf.begin(), buf.size());
-  jojo::err_callback(ptr, jute::view { buf });
+  auto err = jute::view::unsafe(buf.begin());
+
+  auto msg = (filename + ": " + err).cstr();
+  jojo::err_callback(ptr, msg);
 }
 
 struct closer { void operator()(FILE * f) { fclose(f); } };
@@ -25,18 +28,18 @@ struct closer { void operator()(FILE * f) { fclose(f); } };
 template <typename Buf> static void just_read(jute::view name, void * ptr, hai::fn<void, void *, Buf &> callback) {
   FILE * f = fopen(name.cstr().begin(), "rb");
   hai::holder<FILE, closer> fptr { f };
-  if (!f) return fail(ptr);
+  if (!f) return fail(name, ptr);
 
-  if (-1 == fseek(f, 0, SEEK_END)) return fail(ptr);
+  if (-1 == fseek(f, 0, SEEK_END)) return fail(name, ptr);
 
   auto sz = ftell(f);
-  if (sz == -1) return fail(ptr);
+  if (sz == -1) return fail(name, ptr);
   if (sz == 0) return callback(ptr, Buf {});
 
-  if (-1 == fseek(f, 0, SEEK_SET)) return fail(ptr);
+  if (-1 == fseek(f, 0, SEEK_SET)) return fail(name, ptr);
 
   Buf buf { static_cast<unsigned>(sz) };
-  if (1 != fread(buf.begin(), sz, 1, f)) return fail(ptr);
+  if (1 != fread(buf.begin(), sz, 1, f)) return fail(name, ptr);
 
   callback(ptr, buf);
 }
@@ -59,9 +62,9 @@ hai::cstr jojo::read_cstr(jute::view name) { return just_read<hai::cstr>(name); 
 void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
   FILE * f = fopen(name.cstr().begin(), "wb");
   hai::holder<FILE, closer> fptr { f };
-  if (!f) return fail(ptr);
+  if (!f) return fail(name, ptr);
 
-  if (buf.size() > 0 && 1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(ptr);
+  if (buf.size() > 0 && 1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(name, ptr);
 
   callback(ptr);
 }
@@ -69,9 +72,9 @@ void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void
 void jojo::append(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
   FILE * f = fopen(name.cstr().begin(), "ab");
   hai::holder<FILE, closer> fptr { f };
-  if (!f) return fail(ptr);
+  if (!f) return fail(name, ptr);
 
-  if (1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(ptr);
+  if (1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(name, ptr);
 
   callback(ptr);
 }
@@ -86,7 +89,7 @@ void jojo::append(jute::view name, jute::heap data) {
 void jojo::readlines(jute::view name, hai::fn<void, jute::view> fn) {
   FILE * f = fopen(name.cstr().begin(), "rb");
   hai::holder<FILE, closer> fptr { f };
-  if (!f) return fail(nullptr);
+  if (!f) return fail(name, nullptr);
 
   char buf[1024];
   while (fgets(buf, sizeof(buf), f)) {
