@@ -13,7 +13,7 @@
           leco_exports.jojo_callback(ptr, idx);
         })
         .catch(e => {
-          console.error("Request failed: " + e.status);
+          console.error("Request failed", e);
           leco_exports.jojo_err_callback(ptr, idx);
         });
     },
