@@ -61,11 +61,14 @@ hai::cstr jojo::read_cstr(jute::view name) { return just_read<hai::cstr>(name); 
 
 void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
   FILE * f = fopen(name.cstr().begin(), "wb");
-  hai::holder<FILE, closer> fptr { f };
   if (!f) return fail(name, ptr);
 
-  if (buf.size() > 0 && 1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(name, ptr);
+  if (buf.size() > 0 && 1 != fwrite(buf.begin(), buf.size(), 1, f)){
+    fclose(f);
+    return fail(name, ptr);
+  }
 
+  fclose(f);
   callback(ptr);
 }
 
@@ -74,8 +77,12 @@ void jojo::append(jute::view name, void * ptr, jute::heap buf, hai::fn<void, voi
   hai::holder<FILE, closer> fptr { f };
   if (!f) return fail(name, ptr);
 
-  if (1 != fwrite(buf.begin(), buf.size(), 1, f)) return fail(name, ptr);
+  if (1 != fwrite(buf.begin(), buf.size(), 1, f)) {
+    fclose(f);
+    return fail(name, ptr);
+  }
 
+  fclose(f);
   callback(ptr);
 }
 
