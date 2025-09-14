@@ -19,17 +19,4 @@ int main() {
   // In async platforms (wasm, etc) it calls sometime in the future
   // In sync platforms (non-wasm :) it calls immediately
   jojo::read("poc.html", nullptr, &got_file);
-
-#ifndef LECO_TARGET_WASM
-  using namespace jute::literals;
-  jojo::write("out/test.txt", nullptr, "hello "_hs, [](void *) {
-    jojo::append("out/test.txt", nullptr, "world!"_hs, [](void *) {
-      // Another `read` example, using cstr instead of array
-      jojo::read("out/test.txt", nullptr,
-                 [](void *, hai::cstr & buf) { silog::log(silog::info, "Got [%s]", buf.begin()); });
-    });
-  });
-
-  silog::log(silog::info, "Read [%s]", jojo::read_cstr("out/test.txt").begin());
-#endif
 }
