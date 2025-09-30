@@ -20,7 +20,7 @@ namespace jojo {
   export void append(jute::view name, jute::heap data);
 
   export void write(jute::view name, const void * data, unsigned size);
-  export void write(jute::view name, auto data) { write(name, data.data(), data.size()); }
+  export void write(jute::view name, const auto & data) { write(name, data.data(), data.size()); }
 
   export void readlines(jute::view name, hai::fn<void, jute::view> fn);
 #endif
