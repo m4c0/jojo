@@ -59,16 +59,19 @@ template <typename Buf> static Buf just_read(jute::view name) {
 hai::array<char> jojo::read(jute::view name) { return just_read<hai::array<char>>(name); }
 hai::cstr jojo::read_cstr(jute::view name) { return just_read<hai::cstr>(name); }
 
-void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
+static void write(jute::view name, void * ptr, const void * data, unsigned size) {
   FILE * f = fopen(name.cstr().begin(), "wb");
   if (!f) return fail(name, ptr);
 
-  if (buf.size() > 0 && 1 != fwrite(buf.begin(), buf.size(), 1, f)){
+  if (size > 0 && 1 != fwrite(data, size, 1, f)) {
     fclose(f);
     return fail(name, ptr);
   }
 
   fclose(f);
+}
+void jojo::write(jute::view name, void * ptr, jute::heap buf, hai::fn<void, void *> callback) {
+  ::write(name, ptr, buf.data(), buf.size());
   callback(ptr);
 }
 
@@ -86,8 +89,8 @@ void jojo::append(jute::view name, void * ptr, jute::heap buf, hai::fn<void, voi
   callback(ptr);
 }
 
-void jojo::write(jute::view name, jute::heap data) {
-  jojo::write(name, nullptr, data, [=](void *) {});
+void jojo::write(jute::view name, const void * data, unsigned size) {
+  ::write(name, nullptr, data, size);
 }
 void jojo::append(jute::view name, jute::heap data) {
   jojo::append(name, nullptr, data, [=](void *) {});
