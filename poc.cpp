@@ -4,14 +4,14 @@
 import hai;
 import jojo;
 import jute;
-import silog;
+import print;
 
 static void got_file(void * id, hai::array<char> & buf) {
-  silog::log(silog::info, "Got %d bytes: %*s", buf.size(), buf.size(), buf.begin());
+  puta("Got", buf.size(), "bytes:", buf);
 }
 
 static void fail(void * id, jute::view msg) {
-  silog::log(silog::error, "Error: %.*s", static_cast<int>(msg.size()), msg.begin());
+  erran("Error:", msg);
 }
 
 int main() {
