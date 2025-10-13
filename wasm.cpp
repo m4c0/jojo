@@ -1,7 +1,7 @@
-#define EXP(name) __attribute__((export_name(name)))
-
 module jojo;
 import vaselin;
+
+#define EXP(name) __attribute__((export_name(name)))
 
 extern "C" __attribute__((import_module("jojo"), import_name("read"))) void jojo_read(const char * name, unsigned nsz, void * ptr, unsigned idx);
 
