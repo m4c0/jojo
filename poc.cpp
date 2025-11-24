@@ -6,7 +6,7 @@ import jojo;
 import jute;
 import print;
 
-static void got_file(void * id, hai::array<char> & buf) {
+static void got_file(void * id, hai::cstr & buf) {
   puta("Got", buf.size(), "bytes:", buf);
 }
 

@@ -7,15 +7,13 @@ namespace jojo {
 
   export void on_error(hai::fn<void, void *, jute::view> callback) { err_callback = callback; }
 
-  export void read(jute::view name, void *, hai::fn<void, void *, hai::array<char> &>);
   export void read(jute::view name, void *, hai::fn<void, void *, hai::cstr &>);
 
 #ifndef LECO_TARGET_WASM
   export void append(jute::view name, void *, jute::heap data, hai::fn<void, void *>);
   export void write(jute::view name, void *, jute::heap data, hai::fn<void, void *>);
 
-  export hai::cstr read_cstr(jute::view name);
-  export hai::array<char> read(jute::view name);
+  export hai::cstr slurp(jute::view name);
 
   export void append(jute::view name, jute::heap data);
 

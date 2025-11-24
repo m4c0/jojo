@@ -35,18 +35,6 @@ EXP("jojo_err_callback") void err_callback(void * ptr, unsigned idx) {
   g_in_flights[idx] = {};
 }
 
-void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::array<char> &> fn) {
-  for (auto i = 0; i < g_in_flights.size(); i++) {
-    auto & p = g_in_flights[i];
-    if (p.cstr_fn || p.array_fn) continue;
-
-    p.array_fn = fn;
-    jojo_read(name.begin(), name.size(), ptr, i);
-    return;
-  }
-
-  err_callback(ptr, "Too many open files");
-}
 void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::cstr &> fn) {
   for (auto i = 0; i < g_in_flights.size(); i++) {
     auto & p = g_in_flights[i];

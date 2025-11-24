@@ -25,7 +25,7 @@ static void fail(jute::view filename, void * ptr) {
 
 struct closer { void operator()(FILE * f) { fclose(f); } };
 
-template <typename Buf> static void just_read(jute::view name, void * ptr, hai::fn<void, void *, Buf &> callback) {
+void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::cstr &> callback) {
   FILE * f = fopen(name.cstr().begin(), "rb");
   hai::holder<FILE, closer> fptr { f };
   if (!f) return fail(name, ptr);
@@ -34,30 +34,23 @@ template <typename Buf> static void just_read(jute::view name, void * ptr, hai::
 
   auto sz = ftell(f);
   if (sz == -1) return fail(name, ptr);
-  if (sz == 0) return callback(ptr, Buf {});
+  if (sz == 0) return callback(ptr, hai::cstr {});
 
   if (-1 == fseek(f, 0, SEEK_SET)) return fail(name, ptr);
 
-  Buf buf { static_cast<unsigned>(sz) };
+  hai::cstr buf { static_cast<unsigned>(sz) };
   if (1 != fread(buf.begin(), sz, 1, f)) return fail(name, ptr);
 
   callback(ptr, buf);
 }
 
-void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::array<char> &> callback) {
-  just_read(name, ptr, callback);
-}
-void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::cstr &> callback) {
-  just_read(name, ptr, callback);
-}
-
-template <typename Buf> static Buf just_read(jute::view name) {
-  Buf res {};
-  just_read<Buf>(name, nullptr, [&](void *, Buf & r) { res = traits::move(r); });
+hai::cstr jojo::slurp(jute::view name) {
+  hai::cstr res {};
+  jojo::read(name, &res, [](void * out, hai::cstr & r) {
+    *static_cast<hai::cstr *>(out) = traits::move(r);
+  });
   return res;
 }
-hai::array<char> jojo::read(jute::view name) { return just_read<hai::array<char>>(name); }
-hai::cstr jojo::read_cstr(jute::view name) { return just_read<hai::cstr>(name); }
 
 static void write(jute::view name, void * ptr, const void * data, unsigned size) {
   FILE * f = fopen(name.cstr().begin(), "wb");

@@ -24,5 +24,5 @@ int main() {
     });
   });
 
-  silog::log(silog::info, "Read [%s]", jojo::read_cstr("out/test.txt").begin());
+  silog::log(silog::info, "Read [%s]", jojo::slurp("out/test.txt").begin());
 }
