@@ -6,18 +6,14 @@ import jojo;
 import jute;
 import print;
 
-static void got_file(void * id, hai::cstr & buf) {
-  puta("Got", buf.size(), "bytes:", buf);
-}
-
-static void fail(void * id, jute::view msg) {
-  erran("Error:", msg);
-}
-
 int main() {
-  jojo::on_error(&fail);
+  jojo::on_error([](void *, jute::view msg) {
+    erran("Error:", msg);
+  });
 
   // In async platforms (wasm, etc) it calls sometime in the future
   // In sync platforms (non-wasm :) it calls immediately
-  jojo::read("poc.txt", nullptr, &got_file);
+  jojo::read("poc.txt", nullptr, [](void * ptr, hai::cstr & buf) {
+    puta(buf);
+  });
 }
