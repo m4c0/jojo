@@ -6,6 +6,7 @@ namespace jojo {
   extern hai::fn<void, void *, jute::view> err_callback;
 
   export void on_error(hai::fn<void, void *, jute::view> callback) { err_callback = callback; }
+  export void error(void * ptr, jute::view msg) { err_callback(ptr, msg); }
 
   export void read(jute::view name, void *, hai::fn<void, void *, hai::cstr &>);
 
@@ -22,8 +23,6 @@ namespace jojo {
 
   export void readlines(jute::view name, hai::fn<void, jute::view> fn);
 #endif
-
-  export struct error {};
 
   void null_callback(void *, jute::view msg);
 } // namespace jojo

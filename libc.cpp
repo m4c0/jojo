@@ -103,6 +103,5 @@ void jojo::readlines(jute::view name, hai::fn<void, jute::view> fn) {
   }
 }
 
-void jojo::null_callback(void *, jute::view msg) {
-  throw jojo::error {};
-}
+// This should never happen - each app should handle their errors
+void jojo::null_callback(void *, jute::view msg) { throw 0; }

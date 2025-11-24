@@ -30,4 +30,8 @@ int main() {
 
   jojo::read("poca.txt", &id_a, [](void * ptr, hai::cstr & buf) {});
   jojo::read("poca.txt", &id_b, [](void * ptr, hai::cstr & buf) {});
+
+  // Example of how to (re-)throw errors
+  b id_b2 {};
+  jojo::error(&id_b2, "custom error");
 }
