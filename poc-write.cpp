@@ -5,10 +5,9 @@
 import hai;
 import jojo;
 import jute;
-import silog;
+import print;
 
-static void fail(void * id, jute::view msg) {
-  silog::log(silog::error, "Error: %.*s", static_cast<int>(msg.size()), msg.begin());
+static void fail(void * id, jute::view msg) { die(msg);
 }
 
 int main() {
@@ -17,12 +16,9 @@ int main() {
   using namespace jute::literals;
   jojo::write("out/test.txt", nullptr, "hello "_hs, [](void *) {
     jojo::append("out/test.txt", nullptr, "world!"_hs, [](void *) {
-      // Another `read` example, using cstr instead of array
-      // TODO: fix this
-      jojo::read("out/test.txt", nullptr,
-                 [](void *, hai::cstr & buf) { silog::log(silog::info, "Got [%s]", buf.begin()); });
+      jojo::read("out/test.txt", nullptr, [](void *, hai::cstr & buf) { putln(buf); });
     });
   });
 
-  silog::log(silog::info, "Read [%s]", jojo::slurp("out/test.txt").begin());
+  putln(jojo::slurp("out/test.txt"));
 }
