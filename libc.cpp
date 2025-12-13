@@ -41,6 +41,7 @@ void jojo::read(jute::view name, void * ptr, hai::fn<void, void *, hai::cstr &> 
   hai::cstr buf { static_cast<unsigned>(sz) };
   if (1 != fread(buf.begin(), sz, 1, f)) return fail(name, ptr);
 
+  fptr = {};
   callback(ptr, buf);
 }
 
